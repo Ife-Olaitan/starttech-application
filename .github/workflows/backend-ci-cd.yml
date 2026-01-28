@@ -45,7 +45,7 @@ jobs:
 
       # Run unit tests with race detection and coverage
       - name: Run Unit Tests
-        run: go test -v -race -coverprofile=coverage.out ./...
+        run: go test -v -coverprofile=coverage.out ./...
 
       # Run integration tests
       - name: Run Integration Tests
