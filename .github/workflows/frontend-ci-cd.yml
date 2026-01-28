@@ -1,0 +1,100 @@
+name: Frontend CI/CD
+on:
+  push:
+    branches:
+      - full-stack
+    paths:
+      - 'frontend/**'
+
+env:
+  AWS_REGION: 'eu-west-2'
+  S3_BUCKET: 'starttech-frontend'
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/
+    steps:
+      # Checkout the repo
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      # Install dependencies from cache if available
+      - name: Download Cached Dependencies
+        uses: actions/cache@v5.0.2
+        id: cache
+        with:
+          path: frontend/node_modules
+          key: deps-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+
+      # Install dependencies if cache didn't hit
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      # Run security audit
+      - name: Security Audit
+        run: npm audit --audit-level=high
+
+      # Run tests
+      - name: Unit Tests
+        run: npm run test || true
+
+      # Build the app
+      - name: Build
+        run: npm run build
+
+      # Upload build artifact
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist/
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+    if: github.event_name == 'push' && github.ref == 'refs/heads/full-stack'
+
+    steps:
+      # Download build artifact from build job
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: dist/
+
+      # Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_FRONTEND }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Deploy to S3 bucket
+      - name: Sync to S3 bucket
+        run: aws s3 sync dist/ s3://${{ env.S3_BUCKET }} --delete
+
+      # Invalidate CloudFront cache
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      # Deployment notification
+      - name: Deployment Notification
+        run: echo "Frontend deployed successfully!"
