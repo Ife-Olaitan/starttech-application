@@ -68,7 +68,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    if: github.event_name == 'push' && github.ref == 'refs/heads/full-stack'
+#    if: github.event_name == 'push' && github.ref == 'refs/heads/full-stack'
 
     steps:
       # Download build artifact from build job
