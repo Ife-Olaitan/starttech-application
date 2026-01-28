@@ -4,8 +4,8 @@ on:
     branches:
       - full-stack
       - '**'
-#    paths:
-#      - 'frontend/**'
+    paths:
+      - 'frontend/**'
 
 env:
   AWS_REGION: 'eu-west-2'
@@ -44,7 +44,7 @@ jobs:
 
       # Run security audit
       - name: Security Audit
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=low
 
       # Run tests
       - name: Unit Tests
