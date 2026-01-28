@@ -153,10 +153,7 @@ jobs:
       # Trigger rolling update via ASG instance refresh
       - name: Trigger Rolling Update (ASG Instance Refresh)
         run: |
-          aws autoscaling start-instance-refresh \                                                                                                                                      
-            --auto-scaling-group-name ${{ secrets.ASG_NAME }} \                                                                                                                         
-            --preferences '{"MinHealthyPercentage": 50, "InstanceWarmup": 120}'                                                                                                         
-          
+          aws autoscaling start-instance-refresh --auto-scaling-group-name "${{ secrets.ASG_NAME }}" --preferences '{"MinHealthyPercentage": 50, "InstanceWarmup": 120}'
           echo "Instance refresh started. New instances will pull the latest image."                                                                                                    
 
       # Wait for deployment to complete
@@ -164,11 +161,8 @@ jobs:
         run: |
           echo "Waiting for instance refresh to complete..."                                                                                                                            
           
-          while true; do                                                                                                                                                                
-            STATUS=$(aws autoscaling describe-instance-refreshes \                                                                                                                      
-              --auto-scaling-group-name ${{ secrets.ASG_NAME }} \                                                                                                                       
-              --query 'InstanceRefreshes[0].Status' \                                                                                                                                   
-              --output text)                                                                                                                                                            
+          while true; do
+            STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name "${{ secrets.ASG_NAME }}" --query 'InstanceRefreshes[0].Status' --output text)                                                                                                                                                            
           
             echo "Current status: $STATUS"                                                                                                                                              
           
