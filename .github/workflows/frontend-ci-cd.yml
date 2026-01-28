@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - full-stack
+      - '**'
 #    paths:
 #      - 'frontend/**'
 
