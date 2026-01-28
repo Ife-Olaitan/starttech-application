@@ -4,8 +4,8 @@ on:
     branches:
       - full-stack
       - '**'
-    paths:
-      - 'frontend/**'
+#    paths:
+#      - 'frontend/**'
 
 env:
   AWS_REGION: 'eu-west-2'
