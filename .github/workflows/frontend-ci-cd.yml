@@ -9,7 +9,7 @@ on:
 
 env:
   AWS_REGION: 'eu-west-2'
-  S3_BUCKET: 'starttech-frontend'
+  S3_BUCKET: 'starttech-frontend-buc'
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
 jobs:
@@ -68,7 +68,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-#    if: github.event_name == 'push' && github.ref == 'refs/heads/full-stack'
 
     steps:
       # Download build artifact from build job
@@ -82,8 +81,12 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5.1.1
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_FRONTEND }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      #          role-to-assume: ${{ secrets.AWS_ROLE_ARN_FRONTEND }}
+#          aws-region: ${{ env.AWS_REGION }}
 
       # Deploy to S3 bucket
       - name: Sync to S3 bucket
