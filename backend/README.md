@@ -45,7 +45,7 @@ This project includes a `Makefile` to simplify common development tasks. You can
 
 ```bash
 git clone <your-repository-url>
-cd much-to-do/Server/MuchToDo
+cd backend
 ```
 
 ### 2. Configure Environment Variables

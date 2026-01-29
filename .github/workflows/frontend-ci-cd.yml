@@ -1,11 +1,10 @@
 name: Frontend CI/CD
 on:
-  push:
-    branches:
-      - full-stack
-      - '**'
-#    paths:
-#      - 'frontend/**'
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - full-stack
+#      - '**'
 
 env:
   AWS_REGION: 'eu-west-2'
@@ -65,9 +64,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       # Download build artifact from build job
@@ -84,9 +80,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-      #          role-to-assume: ${{ secrets.AWS_ROLE_ARN_FRONTEND }}
-#          aws-region: ${{ env.AWS_REGION }}
 
       # Deploy to S3 bucket
       - name: Sync to S3 bucket
