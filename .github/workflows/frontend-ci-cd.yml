@@ -1,10 +1,10 @@
 name: Frontend CI/CD
 on:
   workflow_dispatch:
-#  push:
-#    branches:
-#      - full-stack
-#      - '**'
+  push:
+    branches:
+      - full-stack
+      - '**'
 
 env:
   AWS_REGION: 'eu-west-2'
@@ -51,6 +51,8 @@ jobs:
 
       # Build the app
       - name: Build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
         run: npm run build
 
       # Upload build artifact

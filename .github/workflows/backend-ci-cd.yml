@@ -1,10 +1,10 @@
 name: Backend CI/CD
 on:
   workflow_dispatch:
-#  push:
-#    branches:
-#      - full-stack
-#      - '**'
+  push:
+    branches:
+      - full-stack
+      - '**'
 
 env:
   DOCKERHUB_REPO: ${{ secrets.DOCKERHUB_USERNAME }}/starttech-backend
